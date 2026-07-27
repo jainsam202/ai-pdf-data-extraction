@@ -2,6 +2,10 @@ from sqlalchemy.orm import Session
 
 from app.repositories.document_repository import DocumentRepository
 from app.schemas.document import DocumentCreate
+from app.redis.cache import RedisCache
+from app.redis.keys import RedisKeys
+
+cache = RedisCache()
 
 
 class DocumentService:
@@ -14,6 +18,24 @@ class DocumentService:
 
     def get_documents(self):
         return self.repository.get_all()
-
+  
     def get_document(self, document_id):
-        return self.repository.get_by_id(document_id)
+        key = RedisKeys.document(document_id)
+        cached = cache.get(key)
+        if cached:
+            return cached
+
+        document = self.repository.get_by_id(document_id)
+
+        if document:
+            cache.set(
+                key,
+                {
+                    "id": str(document.id),
+                    "filename": document.filename,
+                    "status": document.status,
+                },
+                expire=600,
+            )
+
+        return document

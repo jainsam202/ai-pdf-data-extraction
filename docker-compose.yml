@@ -46,6 +46,22 @@ services:
 
     restart: always
 
+  redis:
+    image: redis:7-alpine
+
+    container_name: redis_cache
+
+    ports:
+      - "6379:6379"
+
+    restart: always
+
+    command: redis-server --appendonly yes
+
+    volumes:
+      - redis_data:/data
+
 volumes:
 
   postgres_data:
+  redis_data:
