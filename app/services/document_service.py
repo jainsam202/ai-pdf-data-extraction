@@ -4,6 +4,8 @@ from app.repositories.document_repository import DocumentRepository
 from app.schemas.document import DocumentCreate
 from app.redis.cache import RedisCache
 from app.redis.keys import RedisKeys
+from app.kafka.document_producer import DocumentProducer
+from app.kafka.events import DocumentUploadedEvent
 
 cache = RedisCache()
 
@@ -39,3 +41,17 @@ class DocumentService:
             )
 
         return document
+
+    def start_processing(self, document):
+
+        event = DocumentUploadedEvent(
+            document_id=document.id,
+            filename=document.filename,
+            file_path=document.file_path,
+        )
+
+        DocumentProducer.publish_upload(event)
+
+        return {
+            "message": "Document queued successfully"
+        }
