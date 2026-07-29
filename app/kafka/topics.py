@@ -2,6 +2,7 @@ from app.config.settings import settings
 
 
 class KafkaTopics:
+
     DOCUMENT_UPLOAD = settings.KAFKA_UPLOAD_TOPIC
 
     OCR_COMPLETED = "ocr.completed"
@@ -10,4 +11,4 @@ class KafkaTopics:
 
     EMBEDDING_COMPLETED = "embedding.completed"
 
-    DEAD_LETTER = "document.dlq"
+    DOCUMENT_DLQ = "document.dlq"
