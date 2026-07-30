@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     KAFKA_BOOTSTRAP_SERVERS: str
     KAFKA_UPLOAD_TOPIC: str
     KAFKA_GROUP: str
+    
+    TESSERACT_CMD: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

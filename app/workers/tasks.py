@@ -6,13 +6,13 @@ from app.redis.keys import RedisKeys
 cache = RedisCache()
 
 
-def update_progress(document_id, status, progress):
+def update_progress(document_id):
 
     cache.set(
         RedisKeys.status(document_id),
         {
-            "status": status,
-            "progress": progress,
+            "status": "OCR_COMPLETED",
+            "progress": 40,
         },
         expire=3600,
     )
