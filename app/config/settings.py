@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     KAFKA_GROUP: str
     
     TESSERACT_CMD: str
+    EMBEDDING_MODEL: str
+    EMBEDDING_DIMENSION: int
 
     model_config = SettingsConfigDict(
         env_file=".env",

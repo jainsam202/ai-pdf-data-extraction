@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import ForeignKey, Integer, Text, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -39,4 +39,11 @@ class DocumentChunk(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.utcnow,
+    )
+    
+    embedding = relationship(
+        "DocumentEmbedding",
+        back_populates="chunk",
+        uselist=False,
+        cascade="all, delete",
     )

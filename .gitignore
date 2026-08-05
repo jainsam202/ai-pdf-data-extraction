@@ -23,3 +23,5 @@ build/
 *.sqlite3
 
 .DS_Store
+
+test.py
