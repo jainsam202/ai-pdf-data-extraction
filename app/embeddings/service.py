@@ -1,4 +1,6 @@
 from app.embeddings.model import EmbeddingModel
+from app.config.settings import settings
+from app.embeddings.repository import EmbeddingRepository
 
 
 class EmbeddingService:
@@ -25,3 +27,37 @@ class EmbeddingService:
         )
 
         return vectors.tolist()
+    
+    def generate_and_store(self, db, chunk,):
+        vector = self.generate_embedding(
+            chunk.content
+        )
+
+        repository = EmbeddingRepository(db)
+        repository.upsert(
+            chunk.id,
+            settings.EMBEDDING_MODEL,
+            vector,
+        )
+        
+    def generate_and_store_batch(self, db, chunks):
+        vectors = self.generate_embeddings(
+            [
+                c.content
+                for c in chunks
+            ]
+        )
+        repository = EmbeddingRepository(db)
+        rows = []
+        for chunk, vector in zip(
+            chunks,
+            vectors,
+        ):
+            rows.append(
+                {
+                    "chunk_id": chunk.id,
+                    "model_name": settings.EMBEDDING_MODEL,
+                    "embedding": vector,
+                }
+            )
+        repository.bulk_create(rows)
