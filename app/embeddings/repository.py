@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.document_embedding import DocumentEmbedding
+from sqlalchemy.dialects.postgresql import insert
 
 class EmbeddingRepository:
 
@@ -70,3 +71,22 @@ class EmbeddingRepository:
         self.db.add_all(objects)
         self.db.commit()
         return objects
+    
+    def bulk_upsert(self, rows):
+
+        statement = insert(
+            DocumentEmbedding
+        ).values(rows)
+
+        statement = statement.on_conflict_do_update(
+            index_elements=[
+                DocumentEmbedding.chunk_id
+            ],
+            set_={
+                "embedding": statement.excluded.embedding,
+                "model_name": statement.excluded.model_name,
+            },
+        )
+
+        self.db.execute(statement)
+        self.db.commit()
