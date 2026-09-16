@@ -1,12 +1,4 @@
-"""create documents table
-
-Revision ID: eb477e7cb314
-Revises: 
-Create Date: 2026-07-23 10:52:12.551557
-
-"""
 from typing import Sequence, Union
-
 from alembic import op
 import sqlalchemy as sa
 

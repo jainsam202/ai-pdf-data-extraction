@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime
-
-from sqlalchemy import DateTime, Integer, String
+from sqlalchemy import DateTime, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -26,6 +25,11 @@ class Document(Base):
     status: Mapped[str] = mapped_column(
         String(50),
         default="UPLOADED",
+    )
+    
+    extracted_text: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(

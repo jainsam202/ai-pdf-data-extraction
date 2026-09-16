@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from app.models.document_embedding import DocumentEmbedding
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import select
+from app.models.document_chunk import DocumentChunk
 
 class EmbeddingRepository:
 
@@ -90,3 +92,36 @@ class EmbeddingRepository:
 
         self.db.execute(statement)
         self.db.commit()
+      
+        
+    def search_similar(
+    self,
+    query_embedding: list[float],
+    top_k: int = 5,
+    document_id: int | None = None,
+    min_score: float = 0.50
+    ):
+        distance = (DocumentEmbedding.embedding.cosine_distance(query_embedding))
+        statement = (
+            select(
+                DocumentEmbedding.chunk_id,
+                DocumentChunk.document_id,
+                DocumentChunk.content,
+                (1 - distance).label("score"),
+            )
+            .join(
+                DocumentChunk,
+                DocumentChunk.id
+                == DocumentEmbedding.chunk_id,
+            )
+            .where((1 - distance) >= min_score)
+            .order_by(distance)
+            .limit(top_k)
+        )
+
+        if document_id is not None:
+            statement = statement.where(
+                DocumentChunk.document_id == document_id
+            )
+
+        return self.db.execute(statement).all()

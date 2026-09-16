@@ -1,7 +1,7 @@
 from datetime import datetime
-
+import uuid
 from pgvector.sqlalchemy import Vector
-
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
@@ -23,12 +23,14 @@ class DocumentEmbedding(Base):
         index=True,
     )
 
-    chunk_id: Mapped[int] = mapped_column(
+    chunk_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
         ForeignKey(
             "document_chunks.id",
             ondelete="CASCADE",
         ),
         unique=True,
+        nullable=False,
     )
 
     model_name: Mapped[str] = mapped_column(
