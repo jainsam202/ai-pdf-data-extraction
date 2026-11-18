@@ -7,6 +7,7 @@ from app.api.routes.document import router as document_router
 from app.api.routes.redis import router as redis_router
 from app.api.routes.search import router as search_router
 from app.db.database import engine
+from app.api.rag import router as rag_router
 from app.db.base import Base
 
 app = FastAPI(
@@ -17,9 +18,10 @@ app = FastAPI(
 Prefix = "/api/v1"
 
 app.include_router(health_router,prefix=Prefix,tags=["Health"])
-app.include_router(document_router,prefix=Prefix,tags=["Document"])
+app.include_router(document_router,prefix=Prefix)
 app.include_router(redis_router, prefix=Prefix)
 app.include_router(search_router, prefix=Prefix)
+app.include_router(rag_router, prefix=Prefix, tags=["RAG"])
 
 logger.info("Application Started")
 

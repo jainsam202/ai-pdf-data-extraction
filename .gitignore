@@ -25,3 +25,12 @@ build/
 .DS_Store
 
 test.py
+
+# Chainlit generated translations
+.chainlit/translations/
+
+# Uploaded documents
+uploads/
+
+# Test artifacts
+test-results/

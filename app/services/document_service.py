@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-
+from app.kafka.metadata import EventMetadata
 from app.repositories.document_repository import DocumentRepository
 from app.schemas.document import DocumentCreate
 from app.redis.cache import RedisCache
@@ -30,21 +30,26 @@ class DocumentService:
         document = self.repository.get_by_id(document_id)
 
         if document:
-            cache.set(
-                key,
-                {
-                    "id": str(document.id),
-                    "filename": document.filename,
-                    "status": document.status,
-                },
-                expire=600,
-            )
+            document_data = {
+                "id": str(document.id),
+                "filename": document.filename,
+                "file_path": document.file_path,
+                "file_size": document.file_size,
+                "status": document.status,
+            }
+            cache.set(key,document_data,expire=600)
+            return document_data
 
         return document
 
     def start_processing(self, document):
+        if isinstance(document, dict):
+            document = self.repository.get_by_id(document["id"])
+        if document is None:
+            raise ValueError("Document not found")
 
         event = DocumentUploadedEvent(
+            metadata=EventMetadata(),
             document_id=document.id,
             filename=document.filename,
             file_path=document.file_path,
@@ -53,5 +58,6 @@ class DocumentService:
         DocumentProducer.publish_upload(event)
 
         return {
-            "message": "Document queued successfully"
+            "message": "Document queued successfully",
+            "document_id": str(document.id),
         }

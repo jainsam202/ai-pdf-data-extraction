@@ -1,6 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 class Settings(BaseSettings):
     APP_NAME: str = "AI PDF Extraction API"
     APP_VERSION: str = "1.0.0"
@@ -21,11 +20,11 @@ class Settings(BaseSettings):
     TESSERACT_CMD: str
     EMBEDDING_MODEL: str
     EMBEDDING_DIMENSION: int
+    GEMINI_API_KEY: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=True,
     )
-
 
 settings = Settings()

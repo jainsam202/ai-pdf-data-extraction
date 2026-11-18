@@ -1,19 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from app.db.dependencies import get_db
+from app.embeddings.schemas import SearchRequest, SearchResponse
+from app.embeddings.search import SemanticSearchService
 
-from app.db.session import get_db
-from app.embeddings.schemas import (
-    SearchRequest,
-    SearchResponse,
-)
-from app.embeddings.search import (
-    SemanticSearchService,
-)
-
-router = APIRouter(
-    prefix="/search",
-    tags=["Search"],
-)
+router = APIRouter(prefix="/search", tags=["Search"])
 
 
 @router.post(
